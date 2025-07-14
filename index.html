@@ -1,0 +1,210 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>For Someone Special</title> 
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <style> 
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        .dancing-font {
+            font-family: 'Dancing Script', cursive;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+        
+        .moon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f5f3ff 0%, #c4b5fd 100%);
+            box-shadow: 0 0 30px 5px #a78bfa;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        .heart {
+            animation: heartbeat 1.5s infinite;
+        }
+
+        .heart i {
+            text-shadow: 0 0 10px rgba(255, 0, 102, 0.6), 0 0 20px rgba(255, 0, 102, 0.4);
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .tear {
+            position: absolute;
+            background: linear-gradient(to bottom, #93c5fd 0%, #3b82f6 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: tear-drop 3s infinite;
+        }
+        
+        @keyframes tear-drop {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(150px) scale(0.2); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-8">
+    <!-- Background Music (autoplay with JS trigger) -->
+    <audio autoplay muted loop preload="auto" id="bg-music" class="hidden">
+        <source src="sad-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Main Card -->
+    <div class="card rounded-xl p-8 max-w-md w-full relative overflow-hidden">
+        <!-- Night Sky Background -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div id="stars-container"></div>
+            <div class="moon rounded-full absolute top-8 right-8"></div>
+        </div>
+        
+        <!-- Content -->
+        <div class="relative z-10">
+            <div class="text-center mb-8">
+                <h1 class="dancing-font text-4xl font-bold text-purple-200 mb-2">My Dearest Love</h1>
+                <div class="w-16 h-1 bg-purple-400 mx-auto mb-4"></div>
+                <p class="text-sm text-purple-300">A message from my heart to yours...</p>
+            </div>
+            
+            <div class="bg-slate-800 bg-opacity-50 backdrop-blur-sm rounded-lg p-6 mb-8 border border-slate-700">
+                <p class="text-slate-200 mb-4 leading-relaxed">
+                    As I sit here beneath the same moon that shines upon you, my heart aches with the distance between us. Each night feels longer without you by my side.
+                </p>
+                <p class="text-slate-200 mb-4 leading-relaxed">
+                    I miss the way your laughter fills the silence, the way your hand fits perfectly in mine, and the comfort of simply knowing you're near.
+                </p>
+                <p class="text-slate-200 leading-relaxed">
+                    Though we're apart now, please know that every beat of my heart whispers your name. I'm counting the moments until I can hold you again.
+                </p>
+            </div>
+            
+            <div class="flex justify-center mb-8 relative" style="height: 100px;">
+                <div class="heart text-red-500 text-5xl">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div id="tears-container"></div>
+            </div>
+            
+            <div class="text-center">
+                <p class="dancing-font text-2xl text-purple-200 mb-4">Forever Yours</p>
+                <button id="reveal-btn" class="px-6 py-2 bg-purple-700 hover:bg-purple-600 rounded-full text-white transition-all duration-300 transform hover:scale-105">
+                    Click for a Secret
+                </button>
+                <p id="secret-message" class="hidden mt-4 text-pink-200 dancing-font text-xl"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for stars, tears, and messages -->
+    <script>
+        // Create stars
+        const starsContainer = document.getElementById('stars-container');
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 2 + 1;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            starsContainer.appendChild(star);
+        }
+
+        // Create tears
+        const tearsContainer = document.getElementById('tears-container');
+        function createTear() {
+            const tear = document.createElement('div');
+            tear.classList.add('tear');
+            const size = Math.random() * 7 + 8;
+            tear.style.width = `${size}px`;
+            tear.style.height = `${size}px`;
+            tear.style.left = `${50 + (Math.random() * 20 - 10)}%`;
+            tearsContainer.appendChild(tear);
+            setTimeout(() => {
+                tear.remove();
+            }, 3000);
+        }
+        setInterval(createTear, 800);
+
+        // Secret messages
+        const messages = [
+            "I love you more than words can say",
+            "You're the first thing I think of each morning",
+            "My world is brighter with you in it",
+            "I fall for you more every day",
+            "Your smile is my favorite sight",
+            "I can't wait to see you again",
+            "Each breath aches for you",
+            "In your absence, even silence feels loud",
+            "Your absence lingers like dusk—soft, but heavy",
+            "Even time slows when you're away",
+            "My heart counts days, not hours",
+            "I search the silence for echoes of you"
+        ];
+
+        const revealBtn = document.getElementById('reveal-btn');
+        const secretMessage = document.getElementById('secret-message');
+        const bgMusic = document.getElementById('bg-music');
+        
+        revealBtn.addEventListener('click', () => {
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            secretMessage.textContent = randomMessage;
+            secretMessage.classList.remove('hidden');
+            revealBtn.textContent = "Another One?";
+            
+            // Enable music sound
+            if (bgMusic.muted) {
+                bgMusic.muted = false;
+                bgMusic.play();
+            }
+        });
+    </script>
+</body>
+</html>
